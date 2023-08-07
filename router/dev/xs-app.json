@@ -1,0 +1,11 @@
+{
+    "welcomeFile": "/index.html",
+    "routes": [
+        {
+            "source": "^/(.*)$",
+            "target": "/$1",
+            "destination": "vite-dev-server",
+            "authenticationType": "none"
+        }
+    ]
+}

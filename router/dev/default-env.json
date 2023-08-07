@@ -1,0 +1,8 @@
+{
+    "destinations": [
+        {
+            "name": "vite-dev-server",
+            "url": "http://localhost:5173"
+        }
+    ]
+}
