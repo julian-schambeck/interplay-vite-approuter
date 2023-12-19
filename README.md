@@ -1,17 +1,22 @@
 # Interplay between Vite and SAP Approuter
-This is one possible setup for a local development environment that involves using the SAP _Approuter_ _in combination_ with the frontend-tooling _Vite_.
+This is a setup for a local development environment that uses the _SAP Approuter_ _in combination_ with the frontend-tooling _Vite_.
 
-The Approuter will handle the authorization and authentication details, while one can still leverage the speed and Hot Module Replacement (HMR) of Vite's development server (dev server) to develop the UI quickly.
+The Approuter will handle the authorization and authentication details, while one can still leverage the speed and Hot Module Replacement (HMR) of Vite's development server (dev server) to develop the User Interface (UI) quickly.
 
-Also, say you want to deploy the complete app later on to Business Technology Platform (BTP) in a Clond Foundry Environment, then your locally and your deployed version of the app basically have the same structure.
-This is one of the main benefits of this setup—besides incorporating also authentication/authorization during local development.
+Say you prefer a standalone Approuter and you want to deploy the app later on to Business Technology Platform (BTP) in a Cloud Foundry Environment,
+your local version of the app will have basically the same structure as your deployed version of the app.
 
-Now, to use this setup when developing locally, you first start the app. After you have authenticated, the Approuter will forward any incoming request for the UI to the running Vite dev server.
-This dev server returns all the necessary files to display the webpage in the browser back to the Approuter. In your browser you should now see the UI on http://localhost:5000
+Besides it is beneficial to require authentication and authorization locally—especially if any backend data requires it anyway.
+
+The basic idea is the following. Let's say you have started the app and authenticated successfully. The Approuter will then forward the
+browsers incoming request for the UI to the running Vite dev server. The latter returns the needed files to display the UI back to the Approuter—that in 
+turn returns them back to the browser client. In other words the Approuter acts as a reverse-proxy here. If you now make changes to your UI code—because
+the HMR is still working—your changes will reflect immediately in the webpage shown to you in the browser. This makes for a nice development experience
+overall, while still incorporating authentication and authorization at the same time.
 
 ## Approuter Configuration
-The configuration for the Approuter used locally is stored separately in the `router/dev folder`. Firstly, define a dummy destination
-for local use in `router/dev/default-env.json` that points to the locally running Vite dev server.
+The configuration of the Approuter, which is going t obe applied during local development, is stored in its own folder in `router/dev`.
+Here, define a "dummy" destination for local use in `router/dev/default-env.json` that points to the Vite dev server, that is also running locally.
 ```json
 {
     "destinations": [
@@ -38,16 +43,14 @@ Next, tell the Approuter to forward any incoming requests to this destination. T
 }
 ```
 
-This configuration is only used locally. When it comes time to deploy the app later on to BTP on Cloud Foundry you can ignore it. To do that, add the line `ignore: [./dev]` to the `build-parameters` section of your
-module definition inside the respective `mta.yaml` descriptor file.
-
 ## Vite Configuration
 
-As for Vite you only need to change the port of Vite's web socket used for HMR (i.e., to _5174_ in our case). This way the web socket runs on its own separate port.
-You do this inside the `ui/vite.config.ts`.
-
-For production, you can create a build as usual with the build command. Here you configure Vite to store the build output in `router/dist/`. This way, Approuter can point to the created build in productive scenario (see `router/xs-app.json` for that).
+Change the port of Vite's web socket used for HMR, i.e. to _5174_ in our case, inside the `ui/vite.config.ts`. This way the web socket will
+run on its own separate port. Otherwise, you will get an error at runtime and the HMR won't work.
 ```typescript
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+
 export default defineConfig({
   plugins: [react()],
   server: {
@@ -62,20 +65,19 @@ export default defineConfig({
 });
 ```
 
-## Requirements
+## Installation and Startup
 For this setup Node version 18 was used, but any newer Node LTS version should work as well. 
 You further need to install _ts-node_ and _typescript_ globally with:
 ```
 npm install --global typescript ts-node
 ```
 
-## Installation and Startup
-First install all packages which are required locally by running—while being in the root project folder:
+Next, install the needed local packages by running the following command —while being in the root project folder:
 ```
 npm run setup
 ```
 
-Then you can start both the Vite dev server and the Approuter by running in the same folder:
+Lastly, to start both the Vite dev server and the Approuter, run this command in the same folder:
 ```
 npm run start
 ```
@@ -83,5 +85,7 @@ npm run start
 You should now be able to open up the application at http://localhost:5000 and see the UI there.
 
 ## Folder Structure
-The `ui/` folder containing the UI was generated with the help of the frontend-tooling Vite and its `react-ts` template for React and Typescript.
-The other `router/` folder is intended for everything related to the Approuter.
+The `ui/` folder with the UI was generated with Vite as the underlying frontend-tooling. The `react-ts` template was used for React and Typescript.
+
+Inside the `router/` folder you will find everything related to the Approuter,
+including the config applied during local development (see `router/dev`).
