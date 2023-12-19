@@ -43,7 +43,7 @@ module definition inside the respective `mta.yaml` descriptor file.
 
 ## Vite Configuration
 
-As for Vite you only need to change the port of Vite's websocket used for HMR (i.e., to 5174_ in our case). This way the web socket runs on its own separate port.
+As for Vite you only need to change the port of Vite's web socket used for HMR (i.e., to _5174_ in our case). This way the web socket runs on its own separate port.
 You do this inside the `ui/vite.config.ts`.
 
 For production, you can create a build as usual with the build command. Here you configure Vite to store the build output in `router/dist/`. This way, Approuter can point to the created build in productive scenario (see `router/xs-app.json` for that).
@@ -70,12 +70,12 @@ npm install --global typescript ts-node
 ```
 
 ## Installation and Startup
-First install all packages which are required locally by running:
+First install all packages which are required locally by running—while being in the root project folder:
 ```
 npm run setup
 ```
 
-Then you can start both the Vite dev server and the Approuter by running—while being in the root project folder:
+Then you can start both the Vite dev server and the Approuter by running in the same folder:
 ```
 npm run start
 ```
